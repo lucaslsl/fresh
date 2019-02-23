@@ -19,10 +19,12 @@ const (
 
 var settings = map[string]string{
 	"config_path":       "./runner.conf",
-	"root":              ".",
+	"watch_path":        ".",
 	"tmp_path":          "./tmp",
+	"build_path":        ".",
 	"build_name":        "runner-build",
 	"build_log":         "runner-build-errors.log",
+	"runner_args":       "",
 	"valid_ext":         ".go, .tpl, .tmpl, .html",
 	"no_rebuild_ext":    ".tpl, .tmpl, .html",
 	"ignored":           "assets, tmp",
@@ -108,8 +110,8 @@ func getenv(key, defaultValue string) string {
 	return defaultValue
 }
 
-func root() string {
-	return settings["root"]
+func watchPath() string {
+	return settings["watch_path"]
 }
 
 func tmpPath() string {
@@ -119,12 +121,24 @@ func tmpPath() string {
 func buildName() string {
 	return settings["build_name"]
 }
+
 func buildPath() string {
+	return settings["build_path"]
+}
+
+func runnerBuildPath() string {
 	p := filepath.Join(tmpPath(), buildName())
 	if runtime.GOOS == "windows" && filepath.Ext(p) != ".exe" {
 		p += ".exe"
 	}
 	return p
+}
+
+func runnerArgs() []string {
+	if len(settings["runner_args"]) == 0 {
+		return nil
+	}
+	return strings.Split(settings["runner_args"], " ")
 }
 
 func buildErrorsFileName() string {
